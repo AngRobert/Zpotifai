@@ -16,6 +16,7 @@ public class App {
     private final DatabaseService databaseService;
 
     public App() {
+        // initializes all the database repos so they can be used in DatabaseService
         var albumRepo = new AlbumRepository();
         var albumTrackRepo = new AlbumTrackRepository();
         var artistRepo = new ArtistRepository();

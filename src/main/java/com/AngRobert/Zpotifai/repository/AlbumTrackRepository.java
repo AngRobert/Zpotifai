@@ -130,4 +130,31 @@ public class AlbumTrackRepository extends BaseRepository<AlbumTrack> implements 
         }
         return tracks;
     }
+
+    public boolean isTrackNumberTaken(int albumId, int trackNumber) {
+        String sql = "SELECT 1 FROM ALBUM_TRACKS WHERE album_id = ? AND track_number = ?";
+        try (PreparedStatement stmt = DBConnection.get().prepareStatement(sql)) {
+            stmt.setInt(1, albumId);
+            stmt.setInt(2, trackNumber);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            System.out.println("Error checking track number duplicate: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean isTrackNumberTakenByOther(int albumId, int trackNumber, int currentSongId) {
+        String sql = "SELECT 1 FROM ALBUM_TRACKS WHERE album_id = ? AND track_number = ? AND song_id != ?";
+        try (PreparedStatement stmt = DBConnection.get().prepareStatement(sql)) {
+            stmt.setInt(1, albumId);
+            stmt.setInt(2, trackNumber);
+            stmt.setInt(3, currentSongId);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            System.out.println("Error checking track number duplicate for other tracks: " + e.getMessage());
+        }
+        return false;
+    }
 }

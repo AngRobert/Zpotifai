@@ -191,6 +191,11 @@ public class DatabaseService {
             return -1;
         }
 
+        if (albumTrackRepository.isTrackNumberTaken(albumId, trackNumber)) {
+            System.out.println("Track number " + trackNumber + " is already taken on this album!");
+            return -1;
+        }
+
         int songId = albumTrackRepository.add(
                 List.of("name", "length", "album_id", "track_number"),
                 List.of(name, length, albumId, trackNumber)
@@ -296,6 +301,12 @@ public class DatabaseService {
         if (albumId == -1) return -1;
         int songId = albumTrackRepository.getIdByNameAndAlbum(oldName, albumId);
         if (songId == -1) return -1;
+
+        if (albumTrackRepository.isTrackNumberTakenByOther(albumId, trackNumber, songId)) {
+            System.out.println("Track number " + trackNumber + " is already taken by another song on this album!");
+            return -1;
+        }
+
         int result = albumTrackRepository.update(songId, List.of("name", "length", "track_number"), List.of(newName, length, trackNumber));
         if (result != -1) AuditLogger.log("Updated Album Track: " + oldName);
         return result;

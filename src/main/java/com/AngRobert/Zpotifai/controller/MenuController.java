@@ -39,6 +39,7 @@ public class MenuController {
         }
     }
 
+    // stops the app when the user inputs 0
     public boolean handleStartMenuInput() {
         try {
             int command = Integer.parseInt(scanner.nextLine());
@@ -54,6 +55,7 @@ public class MenuController {
                     System.out.println("Otherwise, press Enter to return to the main menu.");
                     String detailInput = scanner.nextLine();
                     if (!detailInput.trim().isEmpty()) {
+                        // the regex checks for one or more white space characters in a row
                         String[] parts = detailInput.split("\\s+");
                         if (parts.length == 2) {
                             try {
@@ -66,6 +68,9 @@ public class MenuController {
                             } catch (NumberFormatException e) {
                                 System.out.println("Invalid format. Please enter two numbers.");
                             }
+                        }
+                        else {
+                            System.out.println("Invalid input!");
                         }
                     }
                     break;
@@ -208,7 +213,7 @@ public class MenuController {
                     break;
             }
         } catch (NumberFormatException e) {
-            System.out.println("Invalid input! Please enter a number from those that appear on screen.");
+            System.out.println("Invalid input!");
         }
     }
 
@@ -496,6 +501,7 @@ public class MenuController {
         }
     }
 
+    // helper methods that help with input validation
     private String readValidDate(String prompt) {
         String input;
         while (true) {

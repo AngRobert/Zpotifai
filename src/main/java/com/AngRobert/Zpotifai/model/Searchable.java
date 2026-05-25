@@ -9,7 +9,8 @@ public interface Searchable extends Comparable<Searchable> {
     public int getId();
 
     // shows who created an item (song, album, podcast) in the search display.
-    // for each of the models, this information is stored in a field that
+    // for each of the models, this information is stored in a field that gets automatically filled during the mapRow()
+    // operation (when adding).
     default String getCreatorDisplayName() {
         return "";
     }

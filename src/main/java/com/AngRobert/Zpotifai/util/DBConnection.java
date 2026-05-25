@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+// simple utility class that helps with the database connection. initialized once and the connection is used with DBConnection.get();
 public class DBConnection {
     private static Connection conn;
 

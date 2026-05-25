@@ -8,23 +8,24 @@ import java.util.logging.*;
 public class AuditLogger {
     private static final Logger logger = Logger.getLogger(AuditLogger.class.getName());
 
+    private AuditLogger() {}
+
+    // this block runs exactly once when the class is first mentioned in the code.
     static {
         try {
-            // Ensure logs directory exists
+            // ensures logs directory exists
             File logDir = new File("logs");
             if (!logDir.exists()) {
                 logDir.mkdir();
             }
 
-            // Create a FileHandler that appends to the CSV
+            // appends to the csv file
             FileHandler fileHandler = new FileHandler("logs/audit_log.csv", true);
             
-            // Custom Formatter to strictly follow: Action,Timestamp
+            // custom formatter for action, timestamp format (ISO-8601)
             fileHandler.setFormatter(new Formatter() {
                 @Override
                 public String format(LogRecord record) {
-                    // Action name comes from record.getMessage()
-                    // Timestamp uses ISO-8601 (e.g. 2026-05-18T14:30:05.123)
                     String action = record.getMessage();
                     String timestamp = LocalDateTime.now().toString();
                     return action + "," + timestamp + "\n";
@@ -32,8 +33,8 @@ public class AuditLogger {
             });
 
             logger.addHandler(fileHandler);
-            
-            // Disable logging to the console so it stays silent in the CLI
+
+            // disables console output
             logger.setUseParentHandlers(false);
             
         } catch (IOException e) {

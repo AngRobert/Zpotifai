@@ -21,7 +21,6 @@ public class PodcastRepository extends BaseRepository<Podcast> implements Search
         p.setRelease_date(rs.getDate("release_date").toLocalDate());
         p.setStreams(rs.getInt("streams"));
 
-        // Fetch host for display
         List<String> hosts = getRelatedNames(
                 "SELECT C.name FROM CREATORS C JOIN PODCAST_HOSTS PH ON C.creator_id = PH.creator_id WHERE PH.podcast_id = ?",
                 p.getId()

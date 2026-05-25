@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+// this class tries to eliminate code redundancy, especially jdbc sql code.
 public abstract class BaseRepository<T> {
 
     protected abstract T mapRow(ResultSet rs) throws SQLException;
@@ -19,6 +20,7 @@ public abstract class BaseRepository<T> {
         return "name";
     }
 
+    // for tables with children, for example Host and Artist are children of Creator
     protected String getBaseTableName() {
         return getTableName();
     }
@@ -35,6 +37,7 @@ public abstract class BaseRepository<T> {
         return -1;
     }
 
+    // used for streaming simulation
     public T findById(int id) {
         String sql = "SELECT * FROM " + getTableName() + " WHERE " + getBaseTableName() + "." + getIdColumnName() + " = ?";
         try (PreparedStatement stmt = DBConnection.get().prepareStatement(sql)) {
@@ -61,6 +64,7 @@ public abstract class BaseRepository<T> {
         return false;
     }
 
+    // used for search feature
     public List<T> searchByColumnName(String columnName, String value) {
         String sql = "SELECT * FROM " + getTableName() + " WHERE LOWER(" + columnName + ") LIKE LOWER(?)";
         List<T> rez = new ArrayList<>();
@@ -77,6 +81,7 @@ public abstract class BaseRepository<T> {
         return rez;
     }
 
+    // used TagRepository when listing all tags
     public List<String> findAll() {
         List<String> list = new ArrayList<>();
         String sql = "SELECT * FROM " + getTableName();
@@ -89,17 +94,19 @@ public abstract class BaseRepository<T> {
         return list;
     }
 
+    // main add function
     public int add(String tableName, List<String> columns, List<Object> values) {
         if (columns.size() != values.size()) {
             throw new IllegalArgumentException("The number of values inputted must match the number of columns!");
         }
-
+        // builds the sql query
         StringBuilder sql = new StringBuilder("INSERT INTO ")
                 .append(tableName)
                 .append(" (")
                 .append(String.join(", ", columns))
                 .append(") VALUES (");
 
+        // continues building the sql query by adding the "?" parameters
         for (int i = 0; i < values.size(); i++) {
             sql.append("?");
             if (i < values.size() - 1) {
@@ -132,6 +139,8 @@ public abstract class BaseRepository<T> {
 
                                List<String> childCols, List<Object> childVals) {}
 
+    // takes all the columns that need to be inserted into a table and splits them into ones that need to be inserted into the parent table
+    // and the child table
     private ColumnSplit splitColumns(List<String> childOnlyColumns, List<String> columns, List<Object> values) {
         List<String> parentCols = new ArrayList<>();
         List<Object> parentVals = new ArrayList<>();
@@ -161,7 +170,7 @@ public abstract class BaseRepository<T> {
 
     protected int addWithChild(String childTableName, List<String> childOnlyColumns, List<String> columns, List<Object> values) {
         ColumnSplit split = splitColumns(childOnlyColumns, columns, values);
-
+        // first inserts into the parent table
         int id = add(getBaseTableName(), split.parentCols(), split.parentVals());
         if (id != -1) {
             List<String> cCols = new ArrayList<>(split.childCols());
@@ -173,6 +182,7 @@ public abstract class BaseRepository<T> {
         return id;
     }
 
+    // update logic is similar with add logic
     public int update(String tableName, int id, List<String> columns, List<Object> values) {
         if (columns.isEmpty()) return -1;
         if (columns.size() != values.size()) {

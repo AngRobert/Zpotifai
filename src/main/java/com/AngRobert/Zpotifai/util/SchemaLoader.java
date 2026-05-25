@@ -15,6 +15,8 @@ public class SchemaLoader {
             Connection conn = DBConnection.get();
             if (conn != null) {
                 conn.createStatement().execute(sql);
+                
+
                 System.out.println("Schema initialized successfully.");
             } else {
                 System.out.println("Database connection is null. Cannot initialize schema.");
